@@ -1,12 +1,4 @@
 #include <avr/io.h>
-#include <util/delay.h>
-#include <avr/interrupt.h>
-
-void delay(int ms) {
-  for( int i=0; i<ms; i++ ) {
-    _delay_ms(1);
-  }
-}
 
 void writeByte( char b ) {
   while ( !( UCSR0A & (1<<UDRE0) ) );
