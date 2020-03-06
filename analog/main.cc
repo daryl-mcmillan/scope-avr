@@ -25,7 +25,7 @@ int main(void) {
   DIDR0 = 0b00111111; // digital in disable for all analog pins
   ADMUX = (0b01<<REFS0)|(1<<ADLAR)|(0<<MUX0); // ref=vcc, left aligned, input 0
   ADCSRB = (0<<ADTS0); // free running
-  ADCSRA = (1<<ADEN)|(1<<ADSC)|(1<<ADATE)|(0b011<<ADPS0); // enable, start, auto trigger, clock prescale=32
+  ADCSRA = (1<<ADEN)|(1<<ADSC)|(1<<ADATE)|(0b100<<ADPS0); // enable, start, auto trigger, clock prescale=16
 
   char count = 0;
   for( ;; ) {
