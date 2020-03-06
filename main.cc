@@ -22,13 +22,10 @@ int main(void) {
   UCSR0C = (0<<USBS0)|(3<<UCSZ00); // 1 stop bit, 8 data bits
 
   // adc setup
-  DIDR0 = 0b00111111;
-  ADMUX = (0b01<<REFS0)|(0<<ADLAR)|(0<<MUX0);
-  ADCSRB = (0<<ADTS0);
-  ADCSRA = (1<<ADEN)|(1<<ADSC)|(1<<ADATE)|(0b111<<ADPS0);
-
-  // led setup
-  DDRB = 0xFF;
+  DIDR0 = 0b00111111; // digital in disable for all analog pins
+  ADMUX = (0b01<<REFS0)|(1<<ADLAR)|(0<<MUX0); // ref=vcc, left aligned, input 0
+  ADCSRB = (0<<ADTS0); // free running
+  ADCSRA = (1<<ADEN)|(1<<ADSC)|(1<<ADATE)|(0b101<<ADPS0); // enable, start, auto trigger, clock prescale=32
 
   char count = 0;
   for( ;; ) {
