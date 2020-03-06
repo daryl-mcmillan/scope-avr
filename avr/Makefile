@@ -19,10 +19,6 @@ main.o: main.cc
 
 $(PROGNAME): main.o
 
-monitor:
-	stty -F /dev/ttyUSB0 raw -echo 2000000
-	cat /dev/ttyUSB0 | ./a.out
-
 clean:
 	$(RM) *.hex
 	$(RM) *.o
