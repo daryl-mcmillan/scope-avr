@@ -15,87 +15,102 @@
 .global capture
 
 #define const00 r0
-#define tmp1 r1
-#define tmp2 r2
-#define tmp3 r3
-#define tmp4 r4
-#define tmp5 r5
-#define tmp6 r6
-#define tmp7 r7
-#define sync r9
-#define constFF r16
-#define count r24
-#define count_high r10
+#define sample1a r1
+#define sample1b r2
+#define sample2a r3
+#define sample2b r4
+#define sample3a r5
+#define sample3b r6
+#define sample4a r7
+#define sample4b r8
+#define sample5a r9
+#define sample5b r10
+#define sample6a r11
+#define sample6b r12
+#define sync r13
+#define sync_count_0 r14
+#define sync_count_1 r15
+#define sync_count_2 r16
+#define sync_increment r17
+#define constFF r18
 
 capture:
 
 eor const00, const00
+eor sync, sync
+eor sync_count_0, sync_count_0
+eor sync_count_1, sync_count_1
+eor sync_count_2, sync_count_2
+ldi sync_increment, 32
 ldi constFF, 0xFF
 
+#define SAMPLE_PORT PINB
 out DDRB, const00 ; input
+
+#define OUTPUT_A PORTC
+out DDRC, constFF ; output
+out PORTC, constFF ; idle high
+
+#define OUTPUT_B PORTD
 out DDRD, constFF ; output
 out PORTD, constFF ; idle high
 
+in sample1a, SAMPLE_PORT
+nop
+nop
+nop
+in sample1b, SAMPLE_PORT
+nop
+nop
+
 loop:
+adc sync_count_1, const00
 
-in tmp1, PINB
-adiw count, 32
-; adiw is 2 cycles
-adc count_high, const00
-brcc notoggle
+in sample2a, SAMPLE_PORT
+adc sync_count_2, const00
+brcc skip_toggle ; toggle sync on count overflow
 eor sync, constFF
-notoggle:
-nop
+skip_toggle:
 
-in tmp2, PINB
+in sample2b, SAMPLE_PORT
+out OUTPUT_A, const00 ; start bit
+out OUTPUT_B, const00 ; start bit
 nop
+in sample3a, SAMPLE_PORT
+out OUTPUT_A, sync
+out OUTPUT_B, sync
 nop
+in sample3b, SAMPLE_PORT
+out OUTPUT_A, const00 ; ordering bit
+out OUTPUT_B, constFF ; ordering bit
 nop
+in sample4a, SAMPLE_PORT
+out OUTPUT_A, sample1a
+out OUTPUT_B, sample1b
 nop
+in sample4b, SAMPLE_PORT
+out OUTPUT_A, sample2a
+out OUTPUT_B, sample2b
 nop
+in sample5a, SAMPLE_PORT
+out OUTPUT_A, sample3a
+out OUTPUT_B, sample3b
 nop
+in sample5b, SAMPLE_PORT
+out OUTPUT_A, sample4a
+out OUTPUT_B, sample4b
 nop
-
-in tmp3, PINB
-out PORTD, const00 ; start bit
+in sample6a, SAMPLE_PORT
+out OUTPUT_A, sample5a
+out OUTPUT_B, sample5b
 nop
+in sample6b, SAMPLE_PORT
+out OUTPUT_A, sample6a
+out OUTPUT_B, sample6b
 nop
-nop
-out PORTD, sync ; data0 - sync
-nop
-nop
-
-in tmp4, PINB
-out PORTD, tmp1 ; data1
-nop
-nop
-nop
-out PORTD, tmp2 ; data2
-nop
-nop
-
-in tmp5, PINB
-out PORTD, tmp3 ; data3
-nop
-nop
-nop
-out PORTD, tmp4 ; data4
-nop
-nop
-
-in tmp6, PINB
-out PORTD, tmp5 ; data5
-nop
-nop
-nop
-out PORTD,tmp6 ; data6
-nop
-nop
-
-in tmp7, PINB
-out PORTD, tmp7 ; data7
-nop
-nop
-nop
-out PORTD, constFF ; stop bit
+in sample1a, SAMPLE_PORT
+out OUTPUT_A, constFF ; stop bit
+out OUTPUT_B, constFF ; stop bit
+add sync_count_0, sync_increment
+in sample1b, SAMPLE_PORT
 rjmp loop
