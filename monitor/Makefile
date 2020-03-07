@@ -8,6 +8,9 @@ monitor.o: monitor.cc
 run:
 	stty -F $(COMPORT) raw -echo 2000000
 	cat $(COMPORT) | ./monitor
+fast:
+	stty -F $(COMPORT) raw -echo 4000000
+	cat $(COMPORT) | ./monitor
 
 clean:
 	$(RM) *.o
