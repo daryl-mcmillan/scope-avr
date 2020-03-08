@@ -41,7 +41,7 @@ eor sync, sync
 eor sync_count_0, sync_count_0
 eor sync_count_1, sync_count_1
 eor sync_count_2, sync_count_2
-ldi sync_increment, 32
+ldi sync_increment, 16
 ldi constFF, 0xFF
 
 #define SAMPLE_PORT PINB
