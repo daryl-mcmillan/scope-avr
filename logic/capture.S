@@ -44,16 +44,16 @@ eor sync_count_2, sync_count_2
 ldi sync_increment, 16
 ldi constFF, 0xFF
 
-#define SAMPLE_PORT PINB
-out DDRB, const00 ; input
+#define SAMPLE_PORT PIND
+out DDRD, const00 ; input
 
-#define OUTPUT_A PORTC
+#define OUTPUT_A PORTB
+out DDRB, constFF ; output
+out PORTB, constFF ; idle high
+
+#define OUTPUT_B PORTC
 out DDRC, constFF ; output
 out PORTC, constFF ; idle high
-
-#define OUTPUT_B PORTD
-out DDRD, constFF ; output
-out PORTD, constFF ; idle high
 
 in sample1a, SAMPLE_PORT
 nop
@@ -83,27 +83,27 @@ nop
 in sample3b, SAMPLE_PORT
 out OUTPUT_A, const00 ; ordering bit
 out OUTPUT_B, constFF ; ordering bit
-nop
+swap sample1a
 in sample4a, SAMPLE_PORT
 out OUTPUT_A, sample1a
 out OUTPUT_B, sample1b
-nop
+swap sample2a
 in sample4b, SAMPLE_PORT
 out OUTPUT_A, sample2a
 out OUTPUT_B, sample2b
-nop
+swap sample3a
 in sample5a, SAMPLE_PORT
 out OUTPUT_A, sample3a
 out OUTPUT_B, sample3b
-nop
+swap sample4a
 in sample5b, SAMPLE_PORT
 out OUTPUT_A, sample4a
 out OUTPUT_B, sample4b
-nop
+swap sample5a
 in sample6a, SAMPLE_PORT
 out OUTPUT_A, sample5a
 out OUTPUT_B, sample5b
-nop
+swap sample6a
 in sample6b, SAMPLE_PORT
 out OUTPUT_A, sample6a
 out OUTPUT_B, sample6b

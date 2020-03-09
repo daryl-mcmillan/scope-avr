@@ -1,5 +1,6 @@
 PROGNAME=monitor
 COMPORT=/dev/ttyUSB0
+COMPORT2=/dev/ttyUSB1
 
 $(PROGNAME): monitor.o
 
@@ -10,7 +11,10 @@ run:
 	cat $(COMPORT) | ./monitor
 fast:
 	stty -F $(COMPORT) raw -echo 4000000
-	cat $(COMPORT) | ./monitor
+	./monitor < $(COMPORT)
+fast2:
+	stty -F $(COMPORT2) raw -echo 4000000
+	./monitor < $(COMPORT2)
 
 clean:
 	$(RM) *.o
