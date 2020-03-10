@@ -33,6 +33,8 @@
 #define sync_count_2 r16
 #define sync_increment r17
 #define constFF r18
+#define channel_indicator_0 r19
+#define channel_indicator_1 r20
 
 capture:
 
@@ -43,6 +45,8 @@ eor sync_count_1, sync_count_1
 eor sync_count_2, sync_count_2
 ldi sync_increment, 16
 ldi constFF, 0xFF
+eor channel_indicator_0, channel_indicator_0
+eor channel_indicator_1, channel_indicator_1
 
 #define SAMPLE_PORT PIND
 out DDRD, const00 ; input
@@ -64,25 +68,25 @@ nop
 nop
 
 loop:
-adc sync_count_1, const00
+adc sync_count_2, const00
 
 in sample2a, SAMPLE_PORT
-adc sync_count_2, const00
 brcc skip_toggle ; toggle sync on count overflow
 eor sync, constFF
 skip_toggle:
+rol channel_indicator_0
 
 in sample2b, SAMPLE_PORT
 out OUTPUT_A, const00 ; start bit
 out OUTPUT_B, const00 ; start bit
-nop
+rol channel_indicator_1
 in sample3a, SAMPLE_PORT
 out OUTPUT_A, sync
 out OUTPUT_B, sync
 nop
 in sample3b, SAMPLE_PORT
-out OUTPUT_A, const00 ; ordering bit
-out OUTPUT_B, constFF ; ordering bit
+out OUTPUT_A, channel_indicator_0 ; ordering bit
+out OUTPUT_B, channel_indicator_1 ; ordering bit
 swap sample1a
 in sample4a, SAMPLE_PORT
 out OUTPUT_A, sample1a
@@ -107,10 +111,10 @@ swap sample6a
 in sample6b, SAMPLE_PORT
 out OUTPUT_A, sample6a
 out OUTPUT_B, sample6b
-nop
+add sync_count_0, sync_increment
 in sample1a, SAMPLE_PORT
 out OUTPUT_A, constFF ; stop bit
 out OUTPUT_B, constFF ; stop bit
-add sync_count_0, sync_increment
+adc sync_count_1, const00
 in sample1b, SAMPLE_PORT
 rjmp loop
